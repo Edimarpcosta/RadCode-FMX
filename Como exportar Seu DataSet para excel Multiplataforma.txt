@@ -1,0 +1,62 @@
+//Exige a instalaçao do componente "TMS FlexCel for VCL & FMX"  
+//Site para baixar downloadly.ir
+//Funciona no Android e Windows (Tanto VCL como FMX)
+
+//uses FlexCel.Core, FlexCel.XlsAdapter;
+
+procedure GerarExcel;
+var 
+  xls: TXlsFile; 
+  Row, Col: integer; 
+  Fmt: TFlxFormat; 
+  DateXF, DateTimeXF: integer; 
+//ds : TDataSet;
+ {Substitua ds por sua DataSet} 
+begin 
+  xls := TXlsFile.Create(1, TExcelFileFormat.v2016, true); 
+  try 
+    //Generate the formats we will be using to format dates and times. 
+    Fmt := xls.GetDefaultFormat; 
+    Fmt.Format := 'dd/mm/yyyy hh:mm'; 
+    DateTimeXF := xls.AddFormat(Fmt); 
+ 
+    Fmt := xls.GetDefaultFormat; 
+    Fmt.Format := 'dd/mm/yyyy'; 
+    DateXF := xls.AddFormat(Fmt); 
+ 
+    //Now loop over all records and send them to the file. 
+    ds.First; 
+
+
+    Row := 1; 
+    while not ds.Eof do 
+    begin 
+      for Col := 1 to ds.FieldCount do 
+      begin 
+        case ds.Fields[Col - 1].DataType of 
+          TFieldType.ftDateTime: 
+          begin 
+            xls.SetCellValue(Row, Col, ds.Fields[col - 1].AsDateTime, DateTimeXF); 
+          end; 
+ 
+          TFieldType.ftDate: 
+          begin 
+            xls.SetCellValue(Row, Col, ds.Fields[col - 1].AsDateTime, DateXF); 
+          end; 
+ 
+          else 
+          begin 
+            xls.SetCellValue(Row, Col, ds.Fields[col - 1].Value); 
+          end; 
+        end; 
+      end; 
+ 
+      ds.Next; 
+      Inc(Row); 
+    end; 
+ 
+    xls.Save('test.xlsx'); 
+  finally 
+    xls.Free; 
+  end; 
+end; 
